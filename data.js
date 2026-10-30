@@ -33,7 +33,7 @@ window.SH_DATA = {
       resSeats: '座れた回数', resStand: '立ちっぱなし時間', resChi: 'チッと言われた', resLap: 'ひざに座った',
       times: '回', again: 'もう一回乗る', save: '画像を保存', saved: '画像を保存しました',
       cardTitle: '座席ハンター', cardSub: '5駅の座席バトル結果', title: 'TITLE',
-      shareText: '座席ハンターで「{t}」でした。5駅で{n}回座れた。立ちっぱなし{s}秒。',
+      shareText: '座席ハンターで「{t}」でした。5駅で{n}回座れた。立ちっぱなし{s}秒。', post: 'Xでポスト', xTag: '#座席ハンター',
       best: '自己ベスト', goal: '終点ではないけど、おしまい',
       // 吹き出し
       chi: 'チッ', chi2: 'チッ…', oops: 'おっとっと', sorry: 'すみません…', lapMe: 'す、すみません！！', lapThem: 'えっ！？',
@@ -59,7 +59,7 @@ window.SH_DATA = {
       resSeats: 'Seats won', resStand: 'Time standing', resChi: 'Tsks received', resLap: 'Laps sat on',
       times: '', again: 'Ride again', save: 'Save image', saved: 'Image saved',
       cardTitle: 'SEAT HUNTER', cardSub: '5-station seat battle', title: 'TITLE',
-      shareText: 'I got "{t}" in SEAT HUNTER. Seats won {n}/5. Stood for {s}s.',
+      shareText: 'I got "{t}" in SEAT HUNTER. Seats won {n}/5. Stood for {s}s.', post: 'Post on X', xTag: '#SeatHunter',
       best: 'Best', goal: 'Not the last stop, but that is it',
       chi: 'Tsk.', chi2: 'Tsk...', oops: 'Whoa-oh', sorry: 'Sorry...', lapMe: 'S-sorry!!', lapThem: 'Excuse me!?',
       win: 'Ahh... bliss...', lose: 'Grrr...', auntWin: 'Oh my, so sorry dear~', bagWin: '(smirk)', stuWin: '...zzz (slide)',

@@ -55,6 +55,16 @@ const scene = (q, seed, leavers, rivals, slot, opts = {}) => q.evaluate(([seed, 
   sh.dbg.pause(true); sh.start(seed); sh.force.toSeg(); sh.force.plan(leavers, opts); sh.force.rivals(rivals); sh.force.slot(slot)
 }, [seed, leavers, rivals, slot, opts])
 const toT = (q, t) => q.evaluate(t => { const n = Math.round((t - sh.S.segT) * 60); sh.dbg.step(Math.max(0, n)) }, t)
+// Xでポスト: 押すと新しいタブで x.com/intent/post が開く（x.com は偽の応答で受ける）
+async function xPost(pg) {
+  await pg.context().route('https://x.com/**', r => r.fulfill({ status: 200, contentType: 'text/html', body: '<title>x</title>ok' }))
+  const b = await pg.evaluate(() => { const el = document.querySelector('#bX'), r = el.getBoundingClientRect(); return { vis: !!el.offsetParent && getComputedStyle(document.querySelector('#rBtns')).opacity === '1' && r.width > 60 && r.height >= 36, clip: el.scrollWidth > el.clientWidth + 1, label: el.innerText.trim() } })
+  const [pop] = await Promise.all([pg.waitForEvent('popup', { timeout: 6000 }), pg.click('#bX')])
+  await pop.waitForLoadState().catch(() => {}); const url = pop.url(); await pop.close()
+  const u = new URL(url), api = await pg.evaluate(() => ({ text: sh.xText(), url: sh.GAME_URL, stamp: document.querySelector('#rStamp').lastChild.textContent }))
+  return { b, url, text: u.searchParams.get('text'), link: u.searchParams.get('url'), api }
+}
+const clipped = q => q.evaluate(() => [...document.querySelectorAll('main:not([hidden]) button')].filter(b => b.offsetParent && b.scrollWidth > b.clientWidth + 1).map(b => b.id))
 const SIZES = [[360, 640, 'small'], [390, 844, 'phone'], [844, 390, 'land'], [667, 375, 'land-se'], [768, 1024, 'tab'], [1440, 900, 'pc']]
 const GPU = { args: ['--use-angle=metal', '--enable-gpu', '--ignore-gpu-blocklist'] }
 
@@ -237,6 +247,15 @@ await t('結果を1枚の画像（1080x1350）にして保存できる', async (
   const [dl] = await Promise.all([p.waitForEvent('download', { timeout: 8000 }), p.click('#bSave')])
   expect(card.w === 1080 && card.h === 1350 && card.v > 500 && dl.suggestedFilename() === 'seat-hunter.png', { w: card.w, h: card.h, v: card.v }); return { v: card.v, seats: card.seats, file: dl.suggestedFilename() }
 })
+await t('Xでポスト: ボタンが見えて、押すと x.com/intent/post が開く（text に称号・座れた回数とハッシュタグ、url に公開URL）', async () => {
+  const r = await xPost(p)
+  expect(r.b.vis && !r.b.clip && r.b.label === 'Xでポスト' && r.url.startsWith('https://x.com/intent/post?') && r.text.includes('「' + r.api.stamp + '」') && /\d+回座れた/.test(r.text) && r.text.endsWith('#座席ハンター') && !r.text.includes('tom3games') && r.link === 'https://tom3games.github.io/seat-hunter/' && r.text === r.api.text && r.link === r.api.url, r); return r.text
+})
+await t('Xでポスト（英語）: Post on X・英語の本文と #SeatHunter', async () => {
+  await p.click('#bLang'); await p.evaluate(() => { sh.fillResult(true); sh.dbg.step(30) })
+  const r = await xPost(p); await p.click('#bLang'); await p.evaluate(() => sh.fillResult(true))
+  expect(r.b.vis && !r.b.clip && r.b.label === 'Post on X' && r.url.startsWith('https://x.com/intent/post?') && r.text.includes('"' + r.api.stamp + '"') && r.text.endsWith('#SeatHunter') && !/[ぁ-んァ-ン一-龥]/.test(r.text) && r.link === 'https://tom3games.github.io/seat-hunter/', r); return r.text
+})
 await t('英語に切り替えると全画面が英語（結果・画像も）', async () => {
   await p.click('#bLang')
   const r = await p.evaluate(async () => {
@@ -272,11 +291,14 @@ for (const [w, h, name] of SIZES) {
   await q.keyboard.press('p'); views.pause = await fit(q); await q.keyboard.press('p')
   await q.evaluate(() => { sh.dbg.pause(true); let n = 0; while (sh.S.view === 'play' && n < 6000) { sh.dbg.step(1); n++ } sh.fillResult(true); sh.dbg.step(60); sh.dbg.render() })
   views.result = await fit(q); await q.screenshot({ path: `${ROOT}/shots/fit-${name}-result.png` })
+  const clipJa = await clipped(q)
   await q.click('#bLang'); await q.evaluate(() => { sh.fillResult(true); sh.dbg.step(30); sh.dbg.render() })
   views.resultEn = await fit(q); await q.screenshot({ path: `${ROOT}/shots/fit-${name}-result-en.png` })
+  const clipEn = await clipped(q), xVis = await q.evaluate(() => !!document.querySelector('#bX').offsetParent)
   await q.evaluate(() => { sh.title(); sh.dbg.render() }); views.titleEn = await fit(q)
   await q.click('#bLang')
   for (const [v, r] of Object.entries(views)) await t(`一画面に収まる ${name} ${w}x${h} ${v}`, async () => { expect(!r.over.length, r) })
+  await t(`${name}: 結果のボタン（Xでポスト含む）の文字が切れない（日英）`, async () => { expect(!clipJa.length && !clipEn.length && xVis, { clipJa, clipEn, xVis }) })
   await t(`${name}: はみ出し・エラーなし`, async () => { const o = await overflow(q); expect(o.sw <= o.W && !o.bad.length && !q.errs.length, JSON.stringify(o) + q.errs.join('|')) })
   await q.close()
 }

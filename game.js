@@ -862,10 +862,16 @@ async function makeCard() {
   x.textAlign = 'center'; x.font = "800 26px 'M PLUS Rounded 1c',sans-serif"; x.fillStyle = '#c8d6e0'; x.fillText('tom3games.github.io/seat-hunter', 540, 1318)
   return c
 }
+// 共有の本文（結果）。Xでポストは URL を url パラメータで渡すので本文に入れない
+const GAME_URL = 'https://tom3games.github.io/seat-hunter/'
+function shareBody() { const R = S.result, tier = tierOf(R.tier); return T('shareText').replace('{t}', tier[S.lang]).replace('{n}', R.seats).replace('{s}', R.stand.toFixed(1)) }
+function xText() { if (!S.result) return ''; return shareBody() + ' ' + T('xTag') }
+function xIntent() { return 'https://x.com/intent/post?text=' + encodeURIComponent(xText()) + '&url=' + encodeURIComponent(GAME_URL) }
+function postX() { if (!S.result) return; window.open(xIntent(), '_blank', 'noopener') }
 async function saveImage() {
   const c = await makeCard(), blob = await new Promise(r => c.toBlob(r, 'image/png'))
-  const tier = tierOf(S.result.tier), file = new File([blob], 'seat-hunter.png', { type: 'image/png' })
-  const text = T('shareText').replace('{t}', tier[S.lang]).replace('{n}', S.result.seats).replace('{s}', S.result.stand.toFixed(1)) + ' https://tom3games.github.io/seat-hunter/'
+  const file = new File([blob], 'seat-hunter.png', { type: 'image/png' })
+  const text = shareBody() + ' ' + GAME_URL
   if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file], text }); return blob } catch (e) { if (e && e.name === 'AbortError') return blob } }
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'seat-hunter.png'; document.body.appendChild(a); a.click(); a.remove()
   setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast(T('saved')); return blob
@@ -1086,6 +1092,7 @@ $('#bHowGo').onclick = startFromUI
 $('#bAgain').onclick = startFromUI
 $('#bTitle').onclick = () => { Snd.sfx('tap'); revealTimers.forEach(clearTimeout); goTitle() }
 $('#bSave').onclick = () => { Snd.sfx('tap'); saveImage() }
+$('#bX').onclick = () => { Snd.sfx('tap'); postX() }
 $('#bPause').onclick = () => pauseGame(true)
 $('#bResume').onclick = () => pauseGame(false)
 $('#bQuit').onclick = () => { S.view = 'title'; goTitle() }
@@ -1137,7 +1144,7 @@ function render() {
 // ---------- 検証用の窓口
 window.sh = {
   S, D, TL, renderer, camera, scene, SX,
-  start: seed => startGame(seed), title: goTitle, finish, move, sit, saveImage, makeCard, fillResult, computeResult, seatScore,
+  start: seed => startGame(seed), title: goTitle, finish, move, sit, saveImage, xText, xIntent, postX, GAME_URL, makeCard, fillResult, computeResult, seatScore,
   setBot: b => { S.bot = b },
   // 種とボットを決めて最後まで一気に回す（分布と再現性の検証）
   simulate(seed, bot) {
