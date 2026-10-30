@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>座席ハンター | SEAT HUNTER</title>
+<meta name="description" content="満員電車。次の駅で降りる人の前に立て。降りそうな仕草を見抜いて、ドアが開いた瞬間に座る60秒の3Dバカゲー。ライバルは妙に速いおばちゃん、カバンを投げる人、寝たふりの学生。">
+<meta name="theme-color" content="#1c2b3a">
+<meta property="og:type" content="website">
+<meta property="og:title" content="座席ハンター | SEAT HUNTER">
+<meta property="og:description" content="満員電車。次の駅で降りる人の前に立て。早すぎると、ひざの上。">
+<meta property="og:image" content="https://tom3games.github.io/seat-hunter/og.png?v=1">
+<meta property="og:url" content="https://tom3games.github.io/seat-hunter/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231c2b3a'/%3E%3Cpath d='M32 4v18' stroke='%23e8e2d0' stroke-width='5'/%3E%3Cpath d='M32 22l-12 8h24z' fill='%23e8e2d0'/%3E%3Ccircle cx='32' cy='40' r='12' fill='none' stroke='%23ffcf3a' stroke-width='6'/%3E%3Crect x='10' y='54' width='44' height='6' rx='3' fill='%232f8f6a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=DotGothic16&family=M+PLUS+Rounded+1c:wght@500;800;900&display=swap" rel="stylesheet">
+<style>
+[hidden]{display:none!important}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1c2b3a;--navy2:#2b4256;--paper:#fbf7ee;--ink:#1a1e24;--muted:#7d7a72;
+  --green:#2f8f6a;--green-dk:#1b5a41;--yellow:#ffcf3a;--yellow-dk:#a8820f;--red:#e0483a;--red-dk:#8f231a;--led:#ff9b2f;
+  --disp:'Dela Gothic One','Hiragino Sans','Yu Gothic',sans-serif;--dot:'DotGothic16','Osaka-Mono',monospace;
+}
+html{background:var(--navy);touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{height:100%;color:var(--paper);font-family:'M PLUS Rounded 1c','Hiragino Maru Gothic ProN','Hiragino Sans','Yu Gothic',sans-serif;-webkit-tap-highlight-color:transparent;word-break:auto-phrase;line-break:strict;overflow-wrap:anywhere}
+body{overflow:hidden;background:transparent;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button,canvas{touch-action:manipulation}
+button{font-family:inherit;color:inherit;font-size:inherit}
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+#gl{position:fixed;inset:0;width:100vw;height:100svh;display:block;z-index:0;touch-action:none}
+main.view{position:fixed;inset:0;z-index:2;height:100svh;overflow:hidden}
+
+/* ---------- 共通部品 */
+.btn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:900;font-size:18px;letter-spacing:.04em;border:0;border-radius:16px;min-height:54px;padding:0 18px;cursor:pointer;width:100%;
+  background:var(--paper);color:var(--ink);box-shadow:0 5px 0 #b0a894,0 10px 18px rgba(0,0,0,.3);transition:transform .07s,box-shadow .07s;white-space:nowrap}
+.btn::before{content:"";position:absolute;left:8px;right:8px;top:4px;height:44%;border-radius:12px 12px 40% 40%/12px 12px 14px 14px;background:linear-gradient(rgba(255,255,255,.45),rgba(255,255,255,0));pointer-events:none}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #b0a894}
+.btn svg{width:24px;height:24px;flex:none;stroke:currentColor;fill:none;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.btn.go{background:linear-gradient(#45b386,var(--green));color:#fff;box-shadow:0 6px 0 var(--green-dk),0 12px 24px rgba(47,143,106,.35);font-size:21px;min-height:62px}
+.btn.go:active{box-shadow:0 1px 0 var(--green-dk)}
+.btn.ghost{background:rgba(20,30,40,.66);color:var(--paper);box-shadow:inset 0 0 0 2px rgba(251,247,238,.4);font-size:16px;min-height:48px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.btn.ghost::before{display:none}
+.row{display:flex;gap:10px;width:100%}
+.row>.btn{flex:1;min-width:0}
+#corner{position:fixed;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));z-index:50;display:flex;gap:6px}
+#corner button{height:40px;min-width:42px;padding:0 10px;border-radius:12px;border:0;background:rgba(20,30,40,.75);box-shadow:inset 0 0 0 2px rgba(251,247,238,.3);font-weight:900;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px}
+#corner svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- タイトル */
+#vTitle{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(56px,calc(env(safe-area-inset-top) + 50px)) 16px max(26px,calc(env(safe-area-inset-bottom) + 20px));background:linear-gradient(rgba(28,43,58,.78),rgba(28,43,58,0) 36%,rgba(28,43,58,0) 60%,rgba(28,43,58,.8))}
+.logoBox{display:flex;flex-direction:column;align-items:center;text-align:center}
+.logo{line-height:1;transform:rotate(-2deg);display:flex;flex-direction:column;align-items:center}
+.logo .l1{display:inline-block;font-family:var(--dot);font-size:clamp(16px,min(5vw,3.6vh),26px);color:var(--led);background:#14161a;padding:6px 14px 7px;border-radius:6px;box-shadow:0 0 0 3px #3a3f46,0 0 16px rgba(255,155,47,.45);letter-spacing:.12em;text-shadow:0 0 6px rgba(255,155,47,.8)}
+.logo .ring{display:block;width:clamp(34px,min(10vw,7vh),56px);height:clamp(44px,min(13vw,9vh),72px);margin:6px auto -4px}
+.logo .l2{display:block;white-space:nowrap;font-family:var(--disp);font-size:clamp(40px,min(15vw,11vh),112px);color:#fff;letter-spacing:.02em;
+  text-shadow:0 5px 0 var(--green-dk),0 9px 0 rgba(0,0,0,.35),0 0 26px rgba(47,143,106,.5);-webkit-text-stroke:2px var(--green-dk);paint-order:stroke fill}
+html[lang=en] .logo .l2{font-size:clamp(40px,min(13vw,10vh),92px)}
+.logo .sub{display:inline-block;margin-top:12px;font-weight:900;font-size:clamp(13px,3.7vw,17px);padding:6px 14px;border-radius:99px;background:rgba(20,30,40,.85);box-shadow:inset 0 0 0 2px var(--yellow);max-width:92vw;transform:rotate(2deg)}
+.tBtns{width:min(380px,100%);display:flex;flex-direction:column;gap:12px}
+.best{font-weight:900;font-size:13px;text-align:center;color:#d8e6f0;text-shadow:0 2px 4px #000}
+
+/* ---------- 遊び方 */
+#vHow{display:flex;align-items:center;justify-content:center;padding:max(56px,calc(env(safe-area-inset-top) + 50px)) 14px max(16px,calc(env(safe-area-inset-bottom) + 12px));background:rgba(20,30,40,.6)}
+.howCard{width:min(560px,100%);max-height:100%;background:var(--paper);color:var(--ink);border-radius:22px;padding:16px;box-shadow:0 8px 0 #b0a894,0 18px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px;min-height:0;border-top:10px solid var(--green)}
+.howCard h2{font-family:var(--disp);font-weight:400;font-size:24px;text-align:center}
+.howList{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
+.hi{display:flex;gap:12px;align-items:center;background:#ece6d6;border-radius:14px;padding:8px 10px}
+.hi svg{flex:none;width:64px;height:64px}
+.hi b{display:block;font-weight:900;font-size:15px;line-height:1.35}
+.hi p{font-size:12.5px;line-height:1.5;color:#55524a;font-weight:500;margin-top:2px}
+.ctrl{font-size:13px;font-weight:800;text-align:center;background:var(--ink);color:var(--yellow);border-radius:10px;padding:8px 10px;line-height:1.5}
+
+/* ---------- プレイ中 HUD */
+#vPlay{pointer-events:none}
+#vPlay .hit{pointer-events:auto}
+.hud{position:absolute;top:max(8px,env(safe-area-inset-top));left:max(8px,env(safe-area-inset-left));right:calc(max(8px,env(safe-area-inset-right)) + 150px);max-width:460px;display:flex;flex-direction:column;gap:6px}
+.line{display:flex;align-items:center;gap:0;background:rgba(20,30,40,.82);border-radius:12px;padding:6px 10px;box-shadow:inset 0 0 0 2px rgba(251,247,238,.2)}
+.line i{position:relative;flex:none;width:14px;height:14px;border-radius:50%;background:#55606b;box-shadow:inset 0 0 0 3px #2b333b}
+.line i.done{background:#8fa3b3}
+.line i.cur{background:var(--yellow);box-shadow:0 0 0 3px rgba(255,207,58,.35)}
+.line i.won::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--green)}
+.line s{flex:1;height:4px;background:#55606b;min-width:6px}
+.line s.done{background:#8fa3b3}
+.stats{display:flex;gap:6px;flex-wrap:wrap}
+.stat{display:flex;align-items:center;gap:6px;background:rgba(20,30,40,.82);border-radius:12px;padding:4px 10px 4px 6px;box-shadow:inset 0 0 0 2px rgba(251,247,238,.18);min-width:0}
+.stat svg{width:24px;height:24px;flex:none}
+.stat b{font-family:var(--disp);font-weight:400;font-size:19px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stat small{font-size:11px;font-weight:800;color:#c8d6e0;white-space:nowrap}
+.led{position:absolute;left:50%;transform:translateX(-50%);top:calc(max(8px,env(safe-area-inset-top)) + 122px);background:#121417;border-radius:8px;padding:6px 14px;box-shadow:0 0 0 3px #3a3f46,0 6px 16px rgba(0,0,0,.4);font-family:var(--dot);color:var(--led);font-size:clamp(15px,4.4vw,21px);white-space:nowrap;text-shadow:0 0 6px rgba(255,155,47,.75);max-width:calc(100vw - 20px);overflow:hidden}
+.led b{font-weight:400;color:#ffe3a8}
+.warn{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) rotate(-6deg);display:flex;align-items:center;gap:8px;background:var(--yellow);color:var(--ink);font-family:var(--disp);font-size:clamp(22px,7vw,34px);padding:4px 16px 6px 10px;border-radius:12px;box-shadow:0 5px 0 var(--yellow-dk),0 0 0 5px rgba(255,207,58,.35);white-space:nowrap;animation:wpulse .18s ease-in-out infinite alternate}
+.warn svg{width:30px;height:30px}
+.warn.hit{background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dk)}
+@keyframes wpulse{to{transform:translate(-50%,-50%) rotate(-6deg) scale(1.08)}}
+.msg{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);font-family:var(--disp);font-size:clamp(28px,min(10vw,9vh),60px);color:#fff;-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--green-dk);white-space:nowrap;text-align:center;animation:msgIn .35s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes msgIn{from{transform:translate(-50%,-50%) scale(2.4);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.bub{position:absolute;max-width:min(46vw,240px);background:#fff;color:var(--ink);border-radius:14px;padding:4px 10px;font-weight:900;font-size:14px;line-height:1.35;box-shadow:0 3px 0 var(--ink);text-align:center;border:2.5px solid var(--ink);transform:translate(-50%,-100%);white-space:nowrap;pointer-events:none;animation:bubIn .25s cubic-bezier(.2,1.6,.4,1) both;z-index:3}
+.bub::after{content:"";position:absolute;left:50%;margin-left:-8px;bottom:-11px;border:8px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.bub.chi{background:#ffe0dc;font-family:var(--disp);font-weight:400;font-size:clamp(16px,4.6vw,22px);color:var(--red-dk);animation:bubIn .2s cubic-bezier(.2,1.6,.4,1) both,shake .08s .2s infinite}
+.bub.me{background:var(--yellow)}
+@keyframes bubIn{from{transform:translate(-50%,-100%) scale(.2)}to{transform:translate(-50%,-100%) scale(1)}}
+@keyframes shake{25%{margin-left:2px}75%{margin-left:-2px}}
+/* 漫画のコマ（座れた・取られた・ひざ） */
+.cut{position:absolute;left:50%;top:calc(max(8px,env(safe-area-inset-top)) + 172px);transform:translateX(-50%) rotate(-3deg);width:min(330px,82vw);display:flex;align-items:center;gap:10px;background:#fff;color:var(--ink);border:4px solid var(--ink);border-radius:6px;padding:6px 12px 6px 6px;box-shadow:8px 8px 0 rgba(0,0,0,.35);animation:cutIn .3s cubic-bezier(.2,1.5,.4,1) both;pointer-events:none;z-index:4}
+.cut canvas{width:92px;height:92px;flex:none;border-radius:4px;background:repeating-conic-gradient(from 0deg at 50% 50%,#fff3b8 0 8deg,#ffe066 8deg 16deg)}
+.cut.lose canvas{background:repeating-linear-gradient(90deg,#c9d3dc 0 3px,#8796a5 3px 5px)}
+.cut.lap canvas{background:repeating-conic-gradient(from 0deg at 50% 50%,#ffd6ec 0 8deg,#ff9ccf 8deg 16deg)}
+.cut b{font-family:var(--disp);font-weight:400;font-size:clamp(24px,7vw,32px);line-height:1.1;display:block}
+.cut small{display:block;font-weight:900;font-size:13px;color:#55524a;margin-top:2px}
+.cut.win b{color:var(--green-dk)}.cut.lose b{color:#3a4a5a}.cut.lap b{color:#c2398a}
+@keyframes cutIn{from{transform:translateX(-50%) rotate(-3deg) scale(.3);opacity:0}to{transform:translateX(-50%) rotate(-3deg) scale(1);opacity:1}}
+.tut{position:absolute;left:50%;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 96px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;background:rgba(20,30,40,.88);padding:8px 16px 8px 10px;border-radius:14px;white-space:nowrap;box-shadow:inset 0 0 0 2px var(--yellow)}
+.tut svg{width:36px;height:36px;flex:none}
+.tut .fing{animation:tapf .8s ease-in-out infinite;transform-origin:20px 30px}
+@keyframes tapf{50%{transform:scale(.82) translateY(3px)}}
+/* 操作ボタン（スマホ・PC 共通） */
+.pad{position:absolute;left:0;right:0;bottom:max(10px,env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:flex-end;gap:14px;padding:0 max(12px,env(safe-area-inset-left))}
+.pb{pointer-events:auto;border:0;cursor:pointer;width:76px;height:76px;border-radius:50%;background:rgba(20,30,40,.78);box-shadow:inset 0 0 0 3px rgba(251,247,238,.45),0 5px 0 rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:#fff;transition:transform .06s}
+.pb:active,.pb.on{transform:translateY(3px) scale(.96);background:rgba(60,80,100,.9)}
+.pb svg{width:38px;height:38px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.pb.sit{width:132px;height:84px;border-radius:24px;background:linear-gradient(#45b386,var(--green));box-shadow:0 6px 0 var(--green-dk),0 0 0 0 rgba(255,207,58,0);flex-direction:column;gap:0;font-family:var(--disp);font-size:20px;letter-spacing:.06em}
+.pb.sit svg{width:34px;height:30px;stroke-width:2.6}
+.pb.sit.ready{background:linear-gradient(#ffe27a,var(--yellow));color:var(--ink);box-shadow:0 6px 0 var(--yellow-dk),0 0 0 6px rgba(255,207,58,.45);animation:ready .3s ease-in-out infinite alternate}
+@keyframes ready{to{box-shadow:0 6px 0 var(--yellow-dk),0 0 0 12px rgba(255,207,58,.15)}}
+.pb.sit.off{filter:grayscale(.7) brightness(.8)}
+.flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+
+/* ---------- 一時停止 */
+#vPause{display:flex;align-items:center;justify-content:center;background:rgba(14,20,28,.72);padding:16px}
+.pCard{width:min(340px,100%);display:flex;flex-direction:column;gap:12px;align-items:center}
+.pCard h2{font-family:var(--disp);font-weight:400;font-size:34px;color:var(--yellow)}
+
+/* ---------- 結果 */
+#vResult{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:max(54px,calc(env(safe-area-inset-top) + 50px)) 14px max(12px,calc(env(safe-area-inset-bottom) + 10px));background:linear-gradient(rgba(20,30,40,0) 0%,rgba(20,30,40,0) 30%,rgba(20,30,40,.6) 100%)}
+.rWrap{width:min(440px,100%);max-height:100%;display:flex;flex-direction:column;gap:clamp(6px,1.2vh,10px);min-height:0}
+.ticket{position:relative;background:var(--paper);color:var(--ink);border-radius:14px;padding:12px 16px 14px;box-shadow:0 10px 24px rgba(0,0,0,.45);border-left:14px solid var(--green);min-height:0}
+.ticket::before,.ticket::after{content:"";position:absolute;right:-9px;width:18px;height:18px;border-radius:50%;background:rgba(20,30,40,.9)}
+.ticket::before{top:30%}.ticket::after{top:62%}
+.tkHead{display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px dashed #c4baa3;padding-bottom:6px;margin-bottom:8px;font-family:var(--dot)}
+.tkHead b{font-size:16px;letter-spacing:.06em;font-weight:400}
+.tkHead small{font-size:11px;color:var(--muted)}
+.tkRows{display:flex;flex-direction:column;gap:4px}
+.tkR{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-weight:900;font-size:14px;white-space:nowrap}
+.tkR span{color:#55524a}
+.tkR b{font-family:var(--disp);font-weight:400;font-size:clamp(24px,min(7.4vw,4.6vh),34px);line-height:1.05}
+.tkR b small{font-size:.45em;margin-left:3px;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900}
+.tkR.sm b{font-size:20px}
+.seatsRow{display:flex;gap:6px;margin:2px 0 4px}
+.seatsRow i{flex:1;height:16px;border-radius:5px 5px 3px 3px;background:#d9d1bf;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
+.seatsRow i.on{background:var(--green)}
+.rLine{font-weight:900;font-size:13px;text-align:center;color:#55524a;margin-top:6px;min-height:1.4em}
+.stamp{position:absolute;right:10px;top:-26px;mix-blend-mode:multiply;font-family:var(--disp);font-weight:400;font-size:clamp(20px,min(6.6vw,4.2vh),30px);line-height:1.15;padding:8px 14px;border:5px solid currentColor;border-radius:14px;transform:rotate(-9deg);text-align:center;background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 3px rgba(255,255,255,.5);max-width:70%;white-space:normal;word-break:keep-all;overflow-wrap:anywhere;pointer-events:none}
+.stamp small{display:block;font-family:'M PLUS Rounded 1c',sans-serif;font-weight:900;font-size:11px;letter-spacing:.1em;opacity:.85}
+.stamp.show{animation:stampIn .45s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stampIn{from{transform:rotate(-9deg) scale(3.2);opacity:0}to{transform:rotate(-9deg) scale(1);opacity:1}}
+.rBtns{display:flex;flex-direction:column;gap:8px}
+.reveal{opacity:0;transition:opacity .3s}
+.reveal.on{opacity:1}
+.toast{position:fixed;left:50%;bottom:20%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:99px;font-weight:900;z-index:80;box-shadow:inset 0 0 0 2px var(--yellow)}
+
+/* 小さい縦 */
+@media (max-height:700px){
+  .hi svg{width:46px;height:46px}.hi p{font-size:11.5px;line-height:1.4}.hi b{font-size:14px}.howCard{gap:7px;padding:12px}
+  .btn{min-height:46px;font-size:16px}.btn.go{min-height:52px;font-size:19px}
+  .pb{width:64px;height:64px}.pb.sit{width:116px;height:70px;font-size:18px}.pb.sit svg{width:28px;height:24px}
+  .tut{bottom:calc(max(10px,env(safe-area-inset-bottom)) + 80px)}
+  .ticket{padding:9px 14px 11px}.tkR b{font-size:24px}.rBtns{gap:6px}.rLine{margin-top:3px}
+  .cut{top:calc(max(8px,env(safe-area-inset-top)) + 160px)}.cut canvas{width:72px;height:72px}
+}
+/* 背の低い横 */
+@media (max-height:560px) and (orientation:landscape){
+  #vTitle{background:radial-gradient(60% 90% at 25% 50%,rgba(28,43,58,.75),rgba(28,43,58,0) 70%);flex-direction:row;justify-content:space-around;align-items:center;padding-top:max(46px,calc(env(safe-area-inset-top) + 40px));padding-bottom:max(16px,env(safe-area-inset-bottom))}
+  .logo .l2{font-size:clamp(44px,15vh,90px)}
+  .logo .ring{height:clamp(30px,9vh,50px)}
+  .tBtns{width:min(300px,40vw)}
+  .howList{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .hi{flex-direction:column;text-align:center;gap:4px;padding:6px}
+  .hi svg{width:40px;height:40px}.hi p{font-size:11px;line-height:1.35}.hi b{font-size:13px}
+  .howCard{width:min(760px,100%);gap:6px;padding:10px 12px}.howCard h2{font-size:18px}.ctrl{font-size:12px;padding:5px 8px}
+  .hud{right:auto;width:min(330px,42vw)}
+  .led{top:max(8px,env(safe-area-inset-top));left:auto;right:calc(max(8px,env(safe-area-inset-right)) + 150px);transform:none;font-size:15px;max-width:calc(58vw - 160px)}
+  .pad{justify-content:space-between;padding:0 max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left))}
+  .pad .grp{display:flex;gap:12px;align-items:flex-end}
+  .pb{width:62px;height:62px}.pb.sit{width:110px;height:66px;font-size:17px}.pb.sit svg{width:26px;height:22px}
+  .tut{bottom:calc(max(10px,env(safe-area-inset-bottom)) + 76px)}
+  .cut{top:auto;bottom:max(84px,calc(env(safe-area-inset-bottom) + 80px));left:auto;right:max(12px,env(safe-area-inset-right));transform:rotate(-3deg);width:min(300px,40vw)}
+  .cut canvas{width:64px;height:64px}
+  @keyframes cutIn{from{transform:rotate(-3deg) scale(.3);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
+  #vResult{justify-content:center;align-items:flex-end;padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) 12px}
+  .rWrap{width:min(420px,52vw);margin-left:auto;padding-top:46px}
+  .btn{min-height:42px;font-size:15px}.btn.go{min-height:46px;font-size:17px}
+  .rBtns .row .btn svg{display:none}
+  .ticket{padding:7px 14px 9px}.tkHead{padding-bottom:3px;margin-bottom:4px}.tkR b{font-size:22px}.tkR.sm b{font-size:17px}.seatsRow i{height:11px}.rLine{font-size:12px;margin-top:2px}
+  .stamp{font-size:clamp(17px,5vh,24px);padding:5px 10px;border-width:4px}
+  .warn{top:46%}
+  .msg{top:42%}
+}
+@media (max-height:420px) and (orientation:landscape){
+  .rBtns{gap:5px}.tkHead small{display:none}
+  .rWrap{padding-top:44px}
+  .btn{min-height:38px}.btn.go{min-height:42px}
+  .tkR{font-size:12px}.tkR b{font-size:19px}.tkR.sm b{font-size:15px}.rLine{display:none}
+}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div id="corner">
+  <button id="bPause" hidden aria-label="pause"><svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg></button>
+  <button id="bMute" aria-label="mute"><svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/><path class="off" d="M16 9l5 6M21 9l-5 6" style="display:none"/></svg></button>
+  <button id="bLang" aria-label="language">EN</button>
+</div>
+
+<!-- タイトル -->
+<main id="vTitle" class="view">
+  <div class="logoBox">
+    <div class="logo">
+      <span class="l1" data-t="title1"></span>
+      <svg class="ring" viewBox="0 0 40 52"><path d="M20 0v16" stroke="#e8e2d0" stroke-width="5"/><path d="M20 15l-10 7h20z" fill="#e8e2d0"/><circle cx="20" cy="36" r="12" fill="none" stroke="#ffcf3a" stroke-width="6"/></svg>
+      <span class="l2" data-t="title2"></span>
+      <span class="sub" data-t="sub"></span>
+    </div>
+  </div>
+  <div class="tBtns">
+    <div class="best" id="bestLine" hidden></div>
+    <button class="btn go" id="bStart"><svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="15" rx="3"/><path d="M5 11h14M8 21l2-3M16 21l-2-3"/><circle cx="9" cy="14.5" r=".6"/><circle cx="15" cy="14.5" r=".6"/></svg><span data-t="start"></span></button>
+    <button class="btn ghost" id="bHow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01"/></svg><span data-t="how"></span></button>
+  </div>
+</main>
+
+<!-- 遊び方 -->
+<main id="vHow" class="view" hidden>
+  <div class="howCard">
+    <h2 data-t="howTitle"></h2>
+    <div class="howList">
+      <div class="hi">
+        <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#2b4256"/><rect x="6" y="40" width="52" height="10" rx="3" fill="#2f8f6a"/><circle cx="32" cy="24" r="10" fill="#ffd9b8"/><path d="M22 20q10-12 20 0" fill="#3a2a20"/><rect x="24" y="33" width="16" height="10" rx="4" fill="#e8e2d0"/><rect x="40" y="35" width="7" height="11" rx="1.5" fill="#1a1e24"/><rect x="41" y="36" width="5" height="8" fill="#7fd0ff"/><path d="M52 14l-4 8M56 22l-6 2" stroke="#ffcf3a" stroke-width="3" stroke-linecap="round"/><path d="M28 23h2M34 23h2" stroke="#1a1e24" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <div><b data-t="how1"></b><p data-t="how1b"></p></div>
+      </div>
+      <div class="hi">
+        <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#2b4256"/><rect x="6" y="44" width="52" height="8" rx="3" fill="#2f8f6a"/><path d="M14 6v10M50 6v10" stroke="#e8e2d0" stroke-width="2"/><circle cx="14" cy="20" r="4" fill="none" stroke="#ffcf3a" stroke-width="2.5"/><circle cx="50" cy="20" r="4" fill="none" stroke="#ffcf3a" stroke-width="2.5"/><circle cx="32" cy="26" r="8" fill="#ffd9b8"/><path d="M24 36h16v10H24z" fill="#3949ab"/><path d="M32 12v-6M26 14l-3-4M38 14l3-4" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M29 26h2M33 26h2" stroke="#1a1e24" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <div><b data-t="how2"></b><p data-t="how2b"></p></div>
+      </div>
+      <div class="hi">
+        <svg viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#2b4256"/><path d="M8 8h48" stroke="#e8e2d0" stroke-width="3"/><path d="M24 8v10" stroke="#e8e2d0" stroke-width="2"/><circle cx="24" cy="21" r="3.5" fill="none" stroke="#ffcf3a" stroke-width="2.5"/><g transform="rotate(-24 30 40)"><circle cx="30" cy="30" r="7" fill="#ffd9b8"/><rect x="24" y="37" width="12" height="16" rx="4" fill="#e8e2d0"/></g><circle cx="48" cy="36" r="6" fill="#ffd9b8"/><rect x="43" y="42" width="10" height="13" rx="4" fill="#7a5a9a"/><path d="M50 22l6-4M52 27h6" stroke="#ff6a5a" stroke-width="3" stroke-linecap="round"/><path d="M8 50q4-4 8 0t8 0" stroke="#ffcf3a" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+        <div><b data-t="how3"></b><p data-t="how3b"></p></div>
+      </div>
+    </div>
+    <div class="ctrl" id="ctrlLine"></div>
+    <div class="row">
+      <button class="btn ghost" id="bHowBack" style="color:var(--ink);background:#ece6d6;box-shadow:inset 0 0 0 2px #cdc3a8"><span data-t="back"></span></button>
+      <button class="btn go" id="bHowGo"><span data-t="start"></span></button>
+    </div>
+  </div>
+</main>
+
+<!-- プレイ中 -->
+<main id="vPlay" class="view" hidden>
+  <div class="flash" id="flash"></div>
+  <div class="hud">
+    <div class="line" id="line"></div>
+    <div class="stats">
+      <div class="stat"><svg viewBox="0 0 24 24"><rect x="3" y="12" width="18" height="6" rx="2" fill="#2f8f6a"/><rect x="5" y="6" width="14" height="7" rx="2" fill="#45b386"/><path d="M6 18v3M18 18v3" stroke="#c8d6e0" stroke-width="2"/></svg><b id="hSeats">0</b><small id="hSeatsL"></small></div>
+      <div class="stat"><svg viewBox="0 0 24 24"><path d="M12 1v5" stroke="#e8e2d0" stroke-width="2"/><circle cx="12" cy="9" r="3.4" fill="none" stroke="#ffcf3a" stroke-width="2.2"/><circle cx="12" cy="15" r="2.4" fill="#ffd9b8"/><path d="M9 18h6l-1 5h-4z" fill="#e8e2d0"/></svg><b id="hStand">0.0</b><small id="hStandL"></small></div>
+    </div>
+  </div>
+  <div class="led" id="led" hidden></div>
+  <div class="warn" id="warn" hidden><svg viewBox="0 0 24 24"><path d="M12 3L2 21h20z" fill="#1a1e24"/><path d="M12 10v5M12 18h.01" stroke="#ffcf3a" stroke-width="2.6" stroke-linecap="round"/></svg><span id="warnTxt"></span></div>
+  <div id="fx"></div>
+  <div class="msg" id="msg" hidden></div>
+  <div class="tut" id="tut" hidden><svg viewBox="0 0 40 40"><circle cx="20" cy="16" r="12" fill="none" stroke="#ffcf3a" stroke-width="2" opacity=".6"/><g class="fing"><path d="M16 34V16a3 3 0 0 1 6 0v8l6 1.5a3 3 0 0 1 2.2 3.4L29 34z" fill="#fff" stroke="#1a1e24" stroke-width="1.5"/></g></svg><span id="tutTxt"></span></div>
+  <div class="pad">
+    <div class="grp">
+      <button class="pb hit" id="bL" aria-label="left"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+    </div>
+    <button class="pb sit hit" id="bSit" aria-label="sit"><svg viewBox="0 0 28 24"><path d="M5 4v11h16l2 7M5 15l-1 7M9 9h12"/></svg><span data-t="sit"></span></button>
+    <div class="grp">
+      <button class="pb hit" id="bR" aria-label="right"><svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+</main>
+
+<!-- 一時停止 -->
+<main id="vPause" class="view" hidden>
+  <div class="pCard">
+    <h2 data-t="paused"></h2>
+    <button class="btn go" id="bResume"><span data-t="resume"></span></button>
+    <button class="btn ghost" id="bQuit"><span data-t="toTitle"></span></button>
+  </div>
+</main>
+
+<!-- 結果 -->
+<main id="vResult" class="view" hidden>
+  <div class="rWrap">
+    <div class="ticket" id="ticket">
+      <div class="tkHead"><b data-t="cardSub"></b><small id="tkDate"></small></div>
+      <div class="tkRows">
+        <div class="tkR reveal" id="rr1"><span data-t="resSeats"></span><b id="rSeats">0</b></div>
+        <div class="seatsRow reveal" id="rSeatRow"></div>
+        <div class="tkR reveal" id="rr2"><span data-t="resStand"></span><b id="rStand">0</b></div>
+        <div class="tkR sm reveal" id="rr3"><span data-t="resChi"></span><b id="rChi">0</b></div>
+      </div>
+      <div class="rLine reveal" id="rLine"></div>
+      <div class="stamp" id="rStamp" style="visibility:hidden"></div>
+    </div>
+    <div class="rBtns reveal" id="rBtns">
+      <button class="btn go" id="bAgain"><svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.5-5.8M4 4v4h4"/></svg><span data-t="again"></span></button>
+      <div class="row">
+        <button class="btn" id="bSave"><svg viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span data-t="save"></span></button>
+        <button class="btn ghost" id="bTitle"><span data-t="toTitle"></span></button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var opt={passive:false};
+  ['gesturestart','gesturechange','gestureend'].forEach(function(n){document.addEventListener(n,function(e){e.preventDefault()},opt)});
+  document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault()},opt);
+  var last=0;document.addEventListener('touchend',function(e){var n=Date.now();if(n-last<300&&!(e.target.closest&&e.target.closest('button,a')))e.preventDefault();last=n},opt);
+  document.addEventListener('dblclick',function(e){e.preventDefault()},opt);
+  window.addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},opt);
+  window.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&['+','-','=','0',';'].indexOf(e.key)>=0)e.preventDefault()});
+})();
+(function(){
+  var errs=[];
+  window.addEventListener('error',function(e){errs.push((e.message||'error')+' @'+(e.filename||'')+':'+(e.lineno||''))});
+  window.addEventListener('unhandledrejection',function(e){errs.push('reject: '+(e.reason&&e.reason.message||e.reason))});
+  setTimeout(function(){
+    if(window.__shReady) return;
+    var d=document.createElement('div');d.id='boot-err';
+    d.style.cssText='position:fixed;inset:auto 8px 8px 8px;z-index:99;background:#fff;color:#b00;font:12px/1.4 monospace;white-space:pre-wrap;padding:10px;border-radius:8px';
+    d.textContent='起動できませんでした / failed to start\n'+(errs.join('\n')||'(no error captured)')+'\n'+navigator.userAgent;
+    document.body.appendChild(d);
+  },8000);
+})();
+</script>
+<script src="data.js?v=1"></script>
+<script src="snd.js?v=1"></script>
+<script type="module" src="game.js?v=1"></script>
+</body>
+</html>
