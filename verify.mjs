@@ -1,4 +1,5 @@
 // 自分で壊す検証。node verify.mjs（全部 pass で 0 終了）。サーバーは空いているポートを自動で取る
+import './mute-auto.mjs'  // テスト中は絶対に音を出さない（playwright を無音に差し替え）
 import { chromium, webkit } from 'playwright'
 import { spawn } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'

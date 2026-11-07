@@ -1,4 +1,5 @@
 // 手早くスクショを撮る（開発用）。node shot.mjs [幅] [高さ]
+import './mute-auto.mjs'  // テスト中は絶対に音を出さない（playwright を無音に差し替え）
 import { chromium } from 'playwright'
 import { spawn } from 'node:child_process'
 import { mkdirSync } from 'node:fs'

@@ -1,4 +1,5 @@
 // SNS用サムネ og.png（1200x630）。ドアが開いた瞬間、おばちゃんが飛び込みカバンが飛ぶ席の奪い合い＋タイトル。node og.mjs
+import './mute-auto.mjs'  // テスト中は絶対に音を出さない（playwright を無音に差し替え）
 import { chromium } from 'playwright'
 import { spawn } from 'node:child_process'
 const ROOT = import.meta.dirname

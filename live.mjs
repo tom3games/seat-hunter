@@ -1,5 +1,6 @@
 // 公開URLの確認。node live.mjs（ログインしていないブラウザで見る）。SKIPGH=1 で GitHub ページの確認を省く
 // 公開版で通しプレイ（上手いボット）→ 結果まで、og.png の配信、GitHub に個人IDが出ていないかを確かめる
+import './mute-auto.mjs'  // テスト中は絶対に音を出さない（playwright を無音に差し替え）
 import { chromium, webkit } from 'playwright'
 const URL0 = 'https://tom3games.github.io/seat-hunter/'
 const out = []
