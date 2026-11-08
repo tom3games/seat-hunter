@@ -84,7 +84,7 @@ await t('ブラウザの拡大が起きない（viewport・ピンチ・Ctrl+ホ�
 })
 await t('OGP 一式がある（og:image は ?v= 付きの公開URL）', async () => {
   const r = await p.evaluate(() => Object.fromEntries(['og:title', 'og:description', 'og:image', 'og:url', 'og:type'].map(k => [k, document.querySelector(`meta[property="${k}"]`)?.content]).concat([['tw', document.querySelector('meta[name="twitter:card"]')?.content]])))
-  expect(Object.values(r).every(Boolean) && r['og:image'] === 'https://tom3games.github.io/seat-hunter/og.png?v=1' && r['og:url'] === 'https://tom3games.github.io/seat-hunter/' && r.tw === 'summary_large_image', r)
+  expect(Object.values(r).every(Boolean) && r['og:image'] === 'https://tom3games.com/play/seat-hunter/og.png?v=1' && r['og:url'] === 'https://tom3games.com/play/seat-hunter/' && r.tw === 'summary_large_image', r)
 })
 await t('3D の車内が描けている（輝度の散らばり）', async () => { const v = await glVariance(p); expect(v > 300, v); return v })
 await t('タイトル → 遊び方 → もどる → 遊び方から乗車', async () => {
