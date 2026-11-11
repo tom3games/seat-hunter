@@ -52,7 +52,7 @@ main.view{position:fixed;inset:0;z-index:2;height:100svh;overflow:hidden}
 #corner svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---------- タイトル */
-#vTitle{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(56px,calc(env(safe-area-inset-top) + 50px)) 16px max(26px,calc(env(safe-area-inset-bottom) + 20px));background:linear-gradient(rgba(28,43,58,.78),rgba(28,43,58,0) 36%,rgba(28,43,58,0) 60%,rgba(28,43,58,.8))}
+#vTitle{display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:max(56px,calc(env(safe-area-inset-top) + 50px)) 16px max(26px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 20px));background:linear-gradient(rgba(28,43,58,.78),rgba(28,43,58,0) 36%,rgba(28,43,58,0) 60%,rgba(28,43,58,.8))}
 .logoBox{display:flex;flex-direction:column;align-items:center;text-align:center}
 .logo{line-height:1;transform:rotate(-2deg);display:flex;flex-direction:column;align-items:center}
 .logo .l1{display:inline-block;font-family:var(--dot);font-size:clamp(16px,min(5vw,3.6vh),26px);color:var(--led);background:#14161a;padding:6px 14px 7px;border-radius:6px;box-shadow:0 0 0 3px #3a3f46,0 0 16px rgba(255,155,47,.45);letter-spacing:.12em;text-shadow:0 0 6px rgba(255,155,47,.8)}
@@ -65,7 +65,7 @@ html[lang=en] .logo .l2{font-size:clamp(40px,min(13vw,10vh),92px)}
 .best{font-weight:900;font-size:13px;text-align:center;color:#d8e6f0;text-shadow:0 2px 4px #000}
 
 /* ---------- 遊び方 */
-#vHow{display:flex;align-items:center;justify-content:center;padding:max(56px,calc(env(safe-area-inset-top) + 50px)) 14px max(16px,calc(env(safe-area-inset-bottom) + 12px));background:rgba(20,30,40,.6)}
+#vHow{display:flex;align-items:center;justify-content:center;padding:max(56px,calc(env(safe-area-inset-top) + 50px)) 14px max(16px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 12px));background:rgba(20,30,40,.6)}
 .howCard{width:min(560px,100%);max-height:100%;background:var(--paper);color:var(--ink);border-radius:22px;padding:16px;box-shadow:0 8px 0 #b0a894,0 18px 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:10px;min-height:0;border-top:10px solid var(--green)}
 .howCard h2{font-family:var(--disp);font-weight:400;font-size:24px;text-align:center}
 .howList{display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
@@ -114,12 +114,12 @@ html[lang=en] .logo .l2{font-size:clamp(40px,min(13vw,10vh),92px)}
 .cut small{display:block;font-weight:900;font-size:13px;color:#55524a;margin-top:2px}
 .cut.win b{color:var(--green-dk)}.cut.lose b{color:#3a4a5a}.cut.lap b{color:#c2398a}
 @keyframes cutIn{from{transform:translateX(-50%) rotate(-3deg) scale(.3);opacity:0}to{transform:translateX(-50%) rotate(-3deg) scale(1);opacity:1}}
-.tut{position:absolute;left:50%;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 96px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;background:rgba(20,30,40,.88);padding:8px 16px 8px 10px;border-radius:14px;white-space:nowrap;box-shadow:inset 0 0 0 2px var(--yellow)}
+.tut{position:absolute;left:50%;bottom:calc(max(10px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px))) + 96px);transform:translateX(-50%);display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;background:rgba(20,30,40,.88);padding:8px 16px 8px 10px;border-radius:14px;white-space:nowrap;box-shadow:inset 0 0 0 2px var(--yellow)}
 .tut svg{width:36px;height:36px;flex:none}
 .tut .fing{animation:tapf .8s ease-in-out infinite;transform-origin:20px 30px}
 @keyframes tapf{50%{transform:scale(.82) translateY(3px)}}
 /* 操作ボタン（スマホ・PC 共通） */
-.pad{position:absolute;left:0;right:0;bottom:max(10px,env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:flex-end;gap:14px;padding:0 max(12px,env(safe-area-inset-left))}
+.pad{position:absolute;left:0;right:0;bottom:max(10px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)));display:flex;justify-content:center;align-items:flex-end;gap:14px;padding:0 max(12px,env(safe-area-inset-left))}
 .pb{pointer-events:auto;border:0;cursor:pointer;width:76px;height:76px;border-radius:50%;background:rgba(20,30,40,.78);box-shadow:inset 0 0 0 3px rgba(251,247,238,.45),0 5px 0 rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;color:#fff;transition:transform .06s}
 .pb:active,.pb.on{transform:translateY(3px) scale(.96);background:rgba(60,80,100,.9)}
 .pb svg{width:38px;height:38px;stroke:currentColor;fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
@@ -136,7 +136,7 @@ html[lang=en] .logo .l2{font-size:clamp(40px,min(13vw,10vh),92px)}
 .pCard h2{font-family:var(--disp);font-weight:400;font-size:34px;color:var(--yellow)}
 
 /* ---------- 結果 */
-#vResult{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:max(54px,calc(env(safe-area-inset-top) + 50px)) 14px max(12px,calc(env(safe-area-inset-bottom) + 10px));background:linear-gradient(rgba(20,30,40,0) 0%,rgba(20,30,40,0) 30%,rgba(20,30,40,.6) 100%)}
+#vResult{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:max(54px,calc(env(safe-area-inset-top) + 50px)) 14px max(12px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 10px));background:linear-gradient(rgba(20,30,40,0) 0%,rgba(20,30,40,0) 30%,rgba(20,30,40,.6) 100%)}
 .rWrap{width:min(440px,100%);max-height:100%;display:flex;flex-direction:column;gap:clamp(6px,1.2vh,10px);min-height:0}
 .ticket{position:relative;background:var(--paper);color:var(--ink);border-radius:14px;padding:12px 16px 14px;box-shadow:0 10px 24px rgba(0,0,0,.45);border-left:14px solid var(--green);min-height:0}
 .ticket::before,.ticket::after{content:"";position:absolute;right:-9px;width:18px;height:18px;border-radius:50%;background:rgba(20,30,40,.9)}
@@ -175,13 +175,13 @@ html[lang=en] .logo .l2{font-size:clamp(40px,min(13vw,10vh),92px)}
   .hi svg{width:46px;height:46px}.hi p{font-size:11.5px;line-height:1.4}.hi b{font-size:14px}.howCard{gap:7px;padding:12px}
   .btn{min-height:46px;font-size:16px}.btn.go{min-height:52px;font-size:19px}
   .pb{width:64px;height:64px}.pb.sit{width:116px;height:70px;font-size:18px}.pb.sit svg{width:28px;height:24px}
-  .tut{bottom:calc(max(10px,env(safe-area-inset-bottom)) + 80px)}
+  .tut{bottom:calc(max(10px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px))) + 80px)}
   .ticket{padding:9px 14px 11px}.tkR b{font-size:24px}.rBtns{gap:6px}.rLine{margin-top:3px}
   .cut{top:calc(max(8px,env(safe-area-inset-top)) + 160px)}.cut canvas{width:72px;height:72px}
 }
 /* 背の低い横 */
 @media (max-height:560px) and (orientation:landscape){
-  #vTitle{background:radial-gradient(60% 90% at 25% 50%,rgba(28,43,58,.75),rgba(28,43,58,0) 70%);flex-direction:row;justify-content:space-around;align-items:center;padding-top:max(46px,calc(env(safe-area-inset-top) + 40px));padding-bottom:max(16px,env(safe-area-inset-bottom))}
+  #vTitle{background:radial-gradient(60% 90% at 25% 50%,rgba(28,43,58,.75),rgba(28,43,58,0) 70%);flex-direction:row;justify-content:space-around;align-items:center;padding-top:max(46px,calc(env(safe-area-inset-top) + 40px));padding-bottom:max(16px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)))}
   .logo .l2{font-size:clamp(44px,15vh,90px)}
   .logo .ring{height:clamp(30px,9vh,50px)}
   .tBtns{width:min(300px,40vw)}
@@ -194,11 +194,11 @@ html[lang=en] .logo .l2{font-size:clamp(40px,min(13vw,10vh),92px)}
   .pad{justify-content:space-between;padding:0 max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left))}
   .pad .grp{display:flex;gap:12px;align-items:flex-end}
   .pb{width:62px;height:62px}.pb.sit{width:110px;height:66px;font-size:17px}.pb.sit svg{width:26px;height:22px}
-  .tut{bottom:calc(max(10px,env(safe-area-inset-bottom)) + 76px)}
-  .cut{top:auto;bottom:max(84px,calc(env(safe-area-inset-bottom) + 80px));left:auto;right:max(12px,env(safe-area-inset-right));transform:rotate(-3deg);width:min(300px,40vw)}
+  .tut{bottom:calc(max(10px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px))) + 76px)}
+  .cut{top:auto;bottom:max(84px,calc(calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px)) + 80px));left:auto;right:max(12px,env(safe-area-inset-right));transform:rotate(-3deg);width:min(300px,40vw)}
   .cut canvas{width:64px;height:64px}
   @keyframes cutIn{from{transform:rotate(-3deg) scale(.3);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
-  #vResult{justify-content:center;align-items:flex-end;padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) 12px}
+  #vResult{justify-content:center;align-items:flex-end;padding:max(8px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(8px,calc(env(safe-area-inset-bottom) + var(--inapp-bot,0px))) 12px}
   .rWrap{width:min(420px,52vw);margin-left:auto;padding-top:46px}
   .btn{min-height:42px;font-size:15px}.btn.go{min-height:46px;font-size:17px}
   .rBtns .row .btn svg{display:none}
@@ -356,6 +356,6 @@ html[lang=en] .logo .l2{font-size:clamp(40px,min(13vw,10vh),92px)}
 <script src="data.js?v=3"></script>
 <script src="snd.js?v=3"></script>
 <script type="module" src="game.js?v=3"></script>
-<script src="support.js?v=4" data-ja="座布団" data-en="a seat cushion"></script>
+<script src="support.js?v=5" data-ja="座布団" data-en="a seat cushion"></script>
 </body>
 </html>
